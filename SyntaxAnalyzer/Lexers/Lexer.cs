@@ -86,31 +86,31 @@ namespace SyntaxAnalyzer
                 {
                     i++;
                 }
-                else if (SpecialCharacters.ContainsKey(input[i]))
-                {
-                    char value = input[i];
-                    i++;
-                    yield return new Token(value, SpecialCharacters[value]);
-                }
                 else if (char.IsDigit(input[i]))
                 {
                     yield return ReadDigit(input, ref i);
                 }
-                else if (char.IsLetter(input[i]))
+                else
                 {
                     IToken? specialCharactersGroup = TryReadOperator(input, ref i);
                     if (specialCharactersGroup != null)
                     {
                         yield return specialCharactersGroup;
                     }
-                    else
+                    else if(SpecialCharacters.ContainsKey(input[i]))
+                    {
+                        char value = input[i];
+                        i++;
+                        yield return new Token(value, SpecialCharacters[value]);
+                    }
+                    else if(char.IsLetter(input[i]))
                     {
                         yield return ReadSpecialWordOrIdentifier(input, ref i);
                     }
-                }
-                else
-                {
-                    throw new Exception($"Unexpected token '{input[i]}' at position {i}");
+                    else
+                    {
+                        throw new Exception($"Unexpected token '{input[i]}' at position {i}");
+                    }
                 }
             }
 
