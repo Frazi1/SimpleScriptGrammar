@@ -58,7 +58,11 @@ else
 }
 c = (a < b | true) != true
 ",null);
+
+            yield return (@"{ {} {} {} }", null);
+            yield return (@"{ { { { } } } }", null);
         }
+        
 
         public static IEnumerable<object[]> GetParserTests() => GetInputs().Select(x => new object[] {x.input});
 

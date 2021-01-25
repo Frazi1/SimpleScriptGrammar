@@ -19,11 +19,20 @@ namespace SyntaxAnalyzer
         {
             string indent = "";
             PrintValue(writer, indent, "root");
-            PrintStatementList(writer, indent, root.Statements);
+            PrintStatementList(writer, IncreaseIndent(indent ,true), root.StatementList);
         }
 
-        private static void PrintStatementList(TextWriter writer, string indent, IList<StatementNode> statements)
+        private static void PrintStatementList(TextWriter writer, string indent, StatementListNode statementList)
         {
+            PrintValue(writer, indent, "'statements'");
+
+            var statements = statementList.Statements;
+            if (statements.Count == 0)
+            {
+                PrintValue(writer, IncreaseIndent(indent, true), "'EMPTY'");
+                return;
+            }
+            
             for (int i = 0; i < statements.Count; i++)
             {
                 PrintStatement(writer, IncreaseIndent(indent, i + 1 == statements.Count), statements[i]);
@@ -40,9 +49,9 @@ namespace SyntaxAnalyzer
                     PrintExpression(writer, IncreaseIndent(indent, true), assignmentStatementNode.Expression);
                     break;
                 case BlockStatementNode blockStatementNode:
-                    PrintValue(writer, indent, "'{'");
-                    PrintStatementList(writer, IncreaseIndent(indent, true), blockStatementNode.Statements);
-                    PrintValue(writer, indent, "'}'");
+                    PrintValue(writer, indent, "{");
+                    PrintStatementList(writer, IncreaseIndent(indent, true), blockStatementNode.StatementList);
+                    PrintValue(writer, indent, "}");
                     break;
                 case IfElseStatement ifElseStatement:
                     PrintValue(writer, indent, "if");
@@ -62,10 +71,9 @@ namespace SyntaxAnalyzer
 
         private static void PrintVariable(TextWriter writer, string indent, VariableNode variableNode)
         {
-            PrintValue(writer, indent, variableNode.Identifier);
+            PrintValue(writer, indent, $"Identifier: '{variableNode.Identifier.Value}'");
         }
-
-
+        
         private static void PrintExpression(TextWriter writer, string indent, ExpressionNode expression)
         {
             switch (expression)
@@ -100,7 +108,7 @@ namespace SyntaxAnalyzer
                     PrintExpression(writer, IncreaseIndent(indent, true), logicalExpressionNode.Right);
                     break;
                 case SumExpressionNode sumExpressionNode:
-                    PrintValue(writer, indent, sumExpressionNode.Type == SumExpressionNode.SumType.Plus ? "'+" : "-'");
+                    PrintValue(writer, indent, sumExpressionNode.Type == SumExpressionNode.SumType.Plus ? "'+'" : "'-'");
                     PrintExpression(writer, IncreaseIndent(indent, false), sumExpressionNode.Left);
                     PrintExpression(writer, IncreaseIndent(indent, true), sumExpressionNode.Right);
                     break;

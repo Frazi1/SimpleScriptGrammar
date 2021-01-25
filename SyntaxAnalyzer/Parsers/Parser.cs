@@ -20,51 +20,30 @@ namespace SyntaxAnalyzer.Parsers
             var script = new ScriptNode();
 
             enumerator.GetNextToken();
-            var statementNodes = ParseStatementList(script, enumerator);
 
-            foreach (var statementNode in statementNodes)
-            {
-                script.Statements.Add(statementNode);
-            }
+            script.StatementList = ParseStatementList(script, enumerator);
 
             return script;
         }
 
-        private IEnumerable<StatementNode> ParseStatementList(Node parent, IEnumerator<IToken> enumerator)
+        private StatementListNode ParseStatementList(Node parent, IEnumerator<IToken> enumerator)
         {
+            var statementList = new StatementListNode() {Parent = parent};
             while (true)
             {
                 StatementNode? statement = TryParseLineStatement(parent, enumerator);
-                if (statement == null) yield break;
+                if (statement == null) break;
 
-                yield return statement;
-            }
-        }
-
-        private StatementNode? TryParseStatement(Node parent, IEnumerator<IToken> enumerator)
-        {
-            if (enumerator.Current is {Type: TokenType.BraceCurlyOpen})
-            {
-                var blockStatement = new BlockStatementNode {Parent = parent};
-
-                enumerator.GetNextToken();
-                var statements = ParseStatementList(blockStatement, enumerator);
-                foreach (StatementNode statementNode in statements)
-                {
-                    blockStatement.Statements.Add(statementNode);
-                }
-
-                enumerator.AssertToken(TokenType.BraceCurlyClose);
-                return blockStatement;
+                statementList.Statements.Add(statement);
             }
 
-
-            throw new NotImplementedException();
+            return statementList;
         }
+
 
         private StatementNode ParseStatement(Node parent, IEnumerator<IToken> enumerator)
         {
-            return TryParseStatement(parent, enumerator) ?? throw new ExpectedNodeMissingException<StatementNode>(null);
+            return TryParseLineStatement(parent, enumerator) ?? throw new ExpectedNodeMissingException<StatementNode>(null);
         }
 
         private StatementNode? TryParseLineStatement(Node parent, IEnumerator<IToken> enumerator)
@@ -74,6 +53,17 @@ namespace SyntaxAnalyzer.Parsers
             if (token is {Type: TokenType.EOF})
             {
                 return null;
+            }
+
+            if (enumerator.Current is {Type: TokenType.BraceCurlyOpen})
+            {
+                var blockStatement = new BlockStatementNode {Parent = parent};
+
+                enumerator.GetNextToken();
+                blockStatement.StatementList = ParseStatementList(blockStatement, enumerator);
+
+                enumerator.AssertToken(TokenType.BraceCurlyClose);
+                return blockStatement;
             }
 
             if (token is {Type: TokenType.Identifier})
@@ -224,7 +214,11 @@ namespace SyntaxAnalyzer.Parsers
             return ParseGenericBinaryExpression(parent,
                 enumerator,
                 ParseLogicalAndExpression,
-                token => token is {Type: TokenType.EqualsEquals or TokenType.NotEquals or TokenType.Less or TokenType.Greater or TokenType.GreaterEquals or TokenType.LessEquals},
+                token => token is
+                {
+                    Type: TokenType.EqualsEquals or TokenType.NotEquals or TokenType.Less or TokenType.Greater or TokenType.GreaterEquals or TokenType
+                        .LessEquals
+                },
                 token => new LogicalExpressionNode
                 {
                     Type = token.Type switch
