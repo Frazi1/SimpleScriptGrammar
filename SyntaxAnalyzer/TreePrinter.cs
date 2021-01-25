@@ -35,14 +35,14 @@ namespace SyntaxAnalyzer
             switch (statement)
             {
                 case AssignmentStatementNode assignmentStatementNode:
-                    PrintValue(writer, indent, "=");
+                    PrintValue(writer, indent, "'='");
                     PrintVariable(writer, IncreaseIndent(indent, false), assignmentStatementNode.Variable);
                     PrintExpression(writer, IncreaseIndent(indent, true), assignmentStatementNode.Expression);
                     break;
                 case BlockStatementNode blockStatementNode:
-                    PrintValue(writer, indent, "{");
+                    PrintValue(writer, indent, "'{'");
                     PrintStatementList(writer, IncreaseIndent(indent, true), blockStatementNode.Statements);
-                    PrintValue(writer, indent, "}");
+                    PrintValue(writer, indent, "'}'");
                     break;
                 case IfElseStatement ifElseStatement:
                     PrintValue(writer, indent, "if");
@@ -70,11 +70,16 @@ namespace SyntaxAnalyzer
         {
             switch (expression)
             {
+                case AlgebraicGroupExpression algebraicGroupExpression:
+                    PrintValue(writer, indent, "(");
+                    PrintExpression(writer, IncreaseIndent(indent, true), algebraicGroupExpression.InnerExpression);
+                    PrintValue(writer, indent, ")");
+                    break;
                 case MultiplyExpressionNode multiplyExpressionNode:
                     PrintValue(writer, indent, multiplyExpressionNode.Type switch
                     {
-                        MultiplyExpressionNode.MultiplyType.Divide => "/",
-                        MultiplyExpressionNode.MultiplyType.Multiply => "*"
+                        MultiplyExpressionNode.MultiplyType.Divide => "'/'",
+                        MultiplyExpressionNode.MultiplyType.Multiply => "'*'"
                     });
                     PrintExpression(writer, IncreaseIndent(indent, false), multiplyExpressionNode.Left);
                     PrintExpression(writer, IncreaseIndent(indent, true), multiplyExpressionNode.Right);
@@ -93,7 +98,7 @@ namespace SyntaxAnalyzer
                     PrintExpression(writer, IncreaseIndent(indent, true), logicalExpressionNode.Right);
                     break;
                 case SumExpressionNode sumExpressionNode:
-                    PrintValue(writer, indent, sumExpressionNode.Type == SumExpressionNode.SumType.Plus ? "+" : "-");
+                    PrintValue(writer, indent, sumExpressionNode.Type == SumExpressionNode.SumType.Plus ? "'+" : "-'");
                     PrintExpression(writer, IncreaseIndent(indent, false), sumExpressionNode.Left);
                     PrintExpression(writer, IncreaseIndent(indent, true), sumExpressionNode.Right);
                     break;
@@ -103,6 +108,7 @@ namespace SyntaxAnalyzer
                 case VariableNode variableNode:
                     PrintValue(writer, indent, variableNode.Identifier);
                     break;
+                
                 default:
                     throw new ArgumentOutOfRangeException(nameof(expression));
             }

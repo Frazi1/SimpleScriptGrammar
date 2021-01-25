@@ -23,6 +23,7 @@ namespace SyntaxAnalyzer.Tests
             yield return ("a = 15", new[] {"a", "=", "15"});
             yield return ("a = 1 + 2", new[] {"a", "=", "1", "+", "2"});
             yield return ("a = 1 - 2", new[] {"a", "=", "1", "-", "2"});
+            yield return ("a = (1 - 2) * 2", new[] {"a", "=", "(", "1", "-", "2", ")", "*", "2"});
             yield return ("a = 1 - 2 + 3", new[] {"a", "=", "1", "-", "2", "+", "3"});
             yield return ("a = 1 - 2 * 3", new[] {"a", "=", "1", "-", "2", "*", "3"});
             yield return ("a = 1 * 2", new[] {"a", "=", "1", "*", "2"});

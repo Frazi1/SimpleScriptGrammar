@@ -131,6 +131,17 @@ namespace SyntaxAnalyzer.Parsers
                 return new VariableNode {Parent = parent, Identifier = token};
             }
 
+            if (token is {Type: TokenType.ParenthesesOpen})
+            {
+                enumerator.GetNextToken();
+                AlgebraicGroupExpression groupExpression = new() {Parent = parent};
+                
+                groupExpression.InnerExpression = ParseExpression(groupExpression, enumerator);
+                enumerator.AssertToken(TokenType.ParenthesesClose);
+                
+                return groupExpression;
+            }
+
             throw new NotImplementedException($"Unrecognized token '{token.Value}' ({token.Type})");
         }
 
