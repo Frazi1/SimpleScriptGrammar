@@ -8,7 +8,7 @@
 <statement> :: = <block-statement> |
                  <if-statement> |
                  <while-statement> |
-                 <assignment-statement> |
+                 <assignment-statement>
  
  <block-statement> ::= "{" <statement-list> "}"
  <if-statement> ::= "if" "(" <expression> ")" <statement> ("else" <statement>)?
@@ -16,8 +16,7 @@
  <assignment-statement> :== <id> "=" <expression>
  <id> ::= <letter> (<letter> | <digit> )*
  
- <expression> ::= <logical-expression>
- <logical-expression> ::= <logical-and-expression>
+ <expression> ::= <logical-and-expression>
  <logical-and-expression> ::= <logical-or-expression> ("&" <logical-or-expression>)?
  <logical-or-expression> ::= <multiply-expression> ("|" <multiply-expression>)?
  <multiply-expression> ::= <sum-expression> ([*/] <sum-expression>)?
