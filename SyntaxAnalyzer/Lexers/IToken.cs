@@ -1,6 +1,6 @@
 using System;
 
-namespace SyntaxAnalyzer
+namespace SyntaxAnalyzer.Lexers
 {
     public interface IToken
     {

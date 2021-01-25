@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SyntaxAnalyzer.Lexers;
 
 namespace SyntaxAnalyzer.Parsers.Nodes
 {

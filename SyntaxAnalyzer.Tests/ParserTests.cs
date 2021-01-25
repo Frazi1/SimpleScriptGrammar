@@ -18,7 +18,7 @@ namespace SyntaxAnalyzer.Tests
             _outputHelper = outputHelper;
         }
 
-        private static IEnumerable<(string input, string[] assertTokens)> GetInputs()
+        private static IEnumerable<(string input, string[]? assertTokens)> GetInputs()
         {
             yield return ("a = 15", new[] {"a", "=", "15"});
             yield return ("a = 1 + 2", new[] {"a", "=", "1", "+", "2"});
@@ -40,15 +40,26 @@ else
 ", new[] {"if", "(", "a", "<", "15", ")", "{", "a", "=", "15", "*", "15", "-", "2", "+", "1", "}", "else", "{", "a", "=", "56", "}"});
         }
 
-        public static IEnumerable<object[]> GetData() => GetInputs().Select(x => new object[] {x.input, x.assertTokens});
+        public static IEnumerable<object[]> GetParserTests() => GetInputs().Select(x => new object[] {x.input});
+
+        public static IEnumerable<object[]> GetLexerTests() => GetInputs()
+            .Where(x => x.assertTokens != null)
+            .Select(x => new object[] {x.input, x.assertTokens!});
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void AllParserTests(string input, string[] assertTokens)
+        [MemberData(nameof(GetLexerTests))]
+        public void AllLexerTests(string input, string[] assertTokens)
         {
-            var tokens = Lexer.Tokenize(input).ToArray();
-            tokens.Select(t => t.Value).Should().BeEquivalentTo(assertTokens.Append(null));
+            var tokens = Lexer.Tokenize(input);
+            tokens.Select(t => t.Value)
+                .Should().BeEquivalentTo(assertTokens.Append(null));
+        }
 
+        [Theory]
+        [MemberData(nameof(GetParserTests))]
+        public void AllParserTests(string input)
+        {
+            var tokens = Lexer.Tokenize(input);
             var root = Parser.ParseTree(tokens);
 
             var textWriter = new XUnitTextWriter(_outputHelper);

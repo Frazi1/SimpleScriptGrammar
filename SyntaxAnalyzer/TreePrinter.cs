@@ -1,23 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using SyntaxAnalyzer.Lexers;
 using SyntaxAnalyzer.Parsers;
 using SyntaxAnalyzer.Parsers.Nodes;
 
 namespace SyntaxAnalyzer
 {
-    public class ConsoleTextWriter : TextWriter
-    {
-        public override Encoding Encoding => Encoding.UTF8;
-
-        public override void Write(char value)
-        {
-            Console.Write(value);
-        }
-    }
-
-
     public class TreePrinter
     {
         private static string IncreaseIndent(string indent, bool isLast) => indent + (isLast ? "   " : "|  ");
