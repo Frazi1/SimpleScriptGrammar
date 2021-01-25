@@ -34,6 +34,7 @@ namespace SyntaxAnalyzer.Tests
             yield return ("a = true & false", new[] {"a", "=", "true", "&", "false"});
             yield return ("a = true & false | true", new[] {"a", "=", "true", "&", "false", "|", "true"});
             yield return ("a = true != false", new[] {"a", "=", "true", "!=", "false"});
+            yield return ("c = (a < b | true) != true", new[] {"c", "=", "(", "a", "<","b", "|", "true",")", "!=","true"});
 
             yield return (@"
 if(a < 15)

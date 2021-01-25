@@ -224,7 +224,7 @@ namespace SyntaxAnalyzer.Parsers
             return ParseGenericBinaryExpression(parent,
                 enumerator,
                 ParseLogicalAndExpression,
-                token => token is {Type: TokenType.EqualsEquals or TokenType.Less or TokenType.Greater or TokenType.GreaterEquals or TokenType.LessEquals},
+                token => token is {Type: TokenType.EqualsEquals or TokenType.NotEquals or TokenType.Less or TokenType.Greater or TokenType.GreaterEquals or TokenType.LessEquals},
                 token => new LogicalExpressionNode
                 {
                     Type = token.Type switch
