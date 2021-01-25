@@ -27,8 +27,12 @@ namespace SyntaxAnalyzer
         GreaterEquals,
         Less,
         Greater,
+        And,
+        Or,
         KeywordIf,
         KeywordElse,
+        KeywordTrue,
+        KeywordFalse,
         EOF
     }
 
@@ -48,6 +52,8 @@ namespace SyntaxAnalyzer
             {')', TokenType.ParenthesesClose},
             {'{', TokenType.BraceCurlyOpen},
             {'}', TokenType.BraceCurlyClose},
+            {'&', TokenType.And},
+            {'|', TokenType.Or},
         };
 
         private static readonly Dictionary<string, TokenType> LogicalOperators = new()
@@ -65,7 +71,9 @@ namespace SyntaxAnalyzer
             {"for", TokenType.KeywordFor},
             {"while", TokenType.KeywordWhile},
             {"if", TokenType.KeywordIf},
-            {"else", TokenType.KeywordElse}
+            {"else", TokenType.KeywordElse},
+            {"true", TokenType.KeywordTrue},
+            {"false", TokenType.KeywordFalse}
         };
 
         public IEnumerable<IToken> Tokenize(string input)
@@ -113,7 +121,7 @@ namespace SyntaxAnalyzer
         {
             int read = 0;
 
-            while (char.IsLetterOrDigit(input[i + read]))
+            while (i + read < input.Length && char.IsLetterOrDigit(input[i + read]))
             {
                 read++;
             }

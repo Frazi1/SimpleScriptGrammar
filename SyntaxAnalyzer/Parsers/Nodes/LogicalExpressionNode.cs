@@ -9,7 +9,9 @@ namespace SyntaxAnalyzer.Parsers.Nodes
             Equals,
             GreaterEquals,
             LessEquals,
-            NotEquals
+            NotEquals,
+            And,
+            Or
         }
 
         public LogicalExpressionType Type { get; set; }

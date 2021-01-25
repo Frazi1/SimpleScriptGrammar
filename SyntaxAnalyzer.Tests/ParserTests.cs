@@ -29,6 +29,12 @@ namespace SyntaxAnalyzer.Tests
             yield return ("a = 1 * 2", new[] {"a", "=", "1", "*", "2"});
             yield return ("a = 1 / 2", new[] {"a", "=", "1", "/", "2"});
             yield return ("boolTest = a < 15", new[] {"boolTest", "=", "a", "<", "15"});
+            yield return ("a = false", new[] {"a", "=", "false"});
+            yield return ("a = true | false", new[] {"a", "=", "true", "|", "false"});
+            yield return ("a = true & false", new[] {"a", "=", "true", "&", "false"});
+            yield return ("a = true & false | true", new[] {"a", "=", "true", "&", "false", "|", "true"});
+            yield return ("a = true != false", new[] {"a", "=", "true", "!=", "false"});
+
             yield return (@"
 if(a < 15)
 {
@@ -39,6 +45,18 @@ else
     a = 56
 }
 ", new[] {"if", "(", "a", "<", "15", ")", "{", "a", "=", "15", "*", "15", "-", "2", "+", "1", "}", "else", "{", "a", "=", "56", "}"});
+            
+            yield return (@"
+if(a < 15)
+{
+    a = 15 * 15 - 2 +1
+}
+else
+{
+    a = 56
+}
+c = (a < b | true) != true
+",null);
         }
 
         public static IEnumerable<object[]> GetParserTests() => GetInputs().Select(x => new object[] {x.input});
@@ -51,7 +69,7 @@ else
         [MemberData(nameof(GetLexerTests))]
         public void AllLexerTests(string input, string[] assertTokens)
         {
-            var tokens = Lexer.Tokenize(input);
+            var tokens = Lexer.Tokenize(input).ToArray();
             tokens.Select(t => t.Value)
                 .Should().BeEquivalentTo(assertTokens.Append(null));
         }

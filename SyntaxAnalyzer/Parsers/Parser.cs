@@ -119,7 +119,7 @@ namespace SyntaxAnalyzer.Parsers
         {
             var token = enumerator.Current;
 
-            if (token is {Type: TokenType.Number})
+            if (token is {Type: TokenType.Number or TokenType.KeywordFalse or TokenType.KeywordTrue})
             {
                 enumerator.GetNextToken();
                 return new ConstantExpressionNode {Parent = parent, Value = token};
@@ -135,10 +135,10 @@ namespace SyntaxAnalyzer.Parsers
             {
                 enumerator.GetNextToken();
                 AlgebraicGroupExpression groupExpression = new() {Parent = parent};
-                
+
                 groupExpression.InnerExpression = ParseExpression(groupExpression, enumerator);
                 enumerator.AssertToken(TokenType.ParenthesesClose);
-                
+
                 return groupExpression;
             }
 
@@ -184,7 +184,6 @@ namespace SyntaxAnalyzer.Parsers
                 ParseTerm,
                 token => token is {Type: TokenType.SignMinus or TokenType.SignPlus},
                 token => new SumExpressionNode {Type = token.Type is TokenType.SignMinus ? SumExpressionNode.SumType.Minus : SumExpressionNode.SumType.Plus});
-            
         }
 
         private ExpressionNode ParseMultiplicationDivision(Node parent, IEnumerator<IToken> enumerator)
@@ -199,11 +198,32 @@ namespace SyntaxAnalyzer.Parsers
                 });
         }
 
-        private ExpressionNode ParseLogicalExpression(Node parent, IEnumerator<IToken> enumerator)
+
+        private ExpressionNode ParseLogicalOrExpression(Node parent, IEnumerator<IToken> enumerator)
         {
             return ParseGenericBinaryExpression(parent,
                 enumerator,
                 ParseMultiplicationDivision,
+                token => token is {Type: TokenType.Or},
+                _ => new LogicalExpressionNode {Type = LogicalExpressionNode.LogicalExpressionType.Or}
+            );
+        }
+
+        private ExpressionNode ParseLogicalAndExpression(Node parent, IEnumerator<IToken> enumerator)
+        {
+            return ParseGenericBinaryExpression(parent,
+                enumerator,
+                ParseLogicalOrExpression,
+                token => token is {Type: TokenType.And},
+                _ => new LogicalExpressionNode {Type = LogicalExpressionNode.LogicalExpressionType.And}
+            );
+        }
+
+        private ExpressionNode ParseLogicalExpression(Node parent, IEnumerator<IToken> enumerator)
+        {
+            return ParseGenericBinaryExpression(parent,
+                enumerator,
+                ParseLogicalAndExpression,
                 token => token is {Type: TokenType.EqualsEquals or TokenType.Less or TokenType.Greater or TokenType.GreaterEquals or TokenType.LessEquals},
                 token => new LogicalExpressionNode
                 {

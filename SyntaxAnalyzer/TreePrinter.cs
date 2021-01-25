@@ -87,12 +87,14 @@ namespace SyntaxAnalyzer
                 case LogicalExpressionNode logicalExpressionNode:
                     PrintValue(writer, indent, logicalExpressionNode.Type switch
                     {
-                        LogicalExpressionNode.LogicalExpressionType.Equals => "==",
-                        LogicalExpressionNode.LogicalExpressionType.Greater => ">",
-                        LogicalExpressionNode.LogicalExpressionType.Less => "<",
-                        LogicalExpressionNode.LogicalExpressionType.GreaterEquals => ">=",
-                        LogicalExpressionNode.LogicalExpressionType.LessEquals => "<=",
-                        LogicalExpressionNode.LogicalExpressionType.NotEquals => "!=",
+                        LogicalExpressionNode.LogicalExpressionType.Equals => "'=='",
+                        LogicalExpressionNode.LogicalExpressionType.Greater => "'>'",
+                        LogicalExpressionNode.LogicalExpressionType.Less => "'<'",
+                        LogicalExpressionNode.LogicalExpressionType.GreaterEquals => "'>='",
+                        LogicalExpressionNode.LogicalExpressionType.LessEquals => "'<='",
+                        LogicalExpressionNode.LogicalExpressionType.NotEquals => "'!='",
+                        LogicalExpressionNode.LogicalExpressionType.And => "'and'",
+                        LogicalExpressionNode.LogicalExpressionType.Or => "'or'",
                     });
                     PrintExpression(writer, IncreaseIndent(indent, false), logicalExpressionNode.Left);
                     PrintExpression(writer, IncreaseIndent(indent, true), logicalExpressionNode.Right);
