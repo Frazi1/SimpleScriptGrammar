@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using SyntaxAnalyzer.Lexers;
 using SyntaxAnalyzer.Parsers;
@@ -62,7 +61,11 @@ namespace SyntaxAnalyzer
                         PrintValue(writer, indent, "else");
                         PrintStatement(writer, IncreaseIndent(indent, true), ifElseStatement.ElseStatement);
                     }
-
+                    break;
+                case WhileStatement whileStatement:
+                    PrintValue(writer, indent, "while");
+                    PrintExpression(writer, IncreaseIndent(indent, false), whileStatement.WhileCondition);
+                    PrintStatement(writer, IncreaseIndent(indent, true), whileStatement.WhileBody);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statement), statement, "Not implemented");

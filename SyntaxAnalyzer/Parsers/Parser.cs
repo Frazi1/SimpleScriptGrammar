@@ -31,7 +31,7 @@ namespace SyntaxAnalyzer.Parsers
             var statementList = new StatementListNode() {Parent = parent};
             while (true)
             {
-                StatementNode? statement = TryParseLineStatement(parent, enumerator);
+                StatementNode? statement = TryParseStatement(parent, enumerator);
                 if (statement == null) break;
 
                 statementList.Statements.Add(statement);
@@ -43,10 +43,10 @@ namespace SyntaxAnalyzer.Parsers
 
         private StatementNode ParseStatement(Node parent, IEnumerator<IToken> enumerator)
         {
-            return TryParseLineStatement(parent, enumerator) ?? throw new ExpectedNodeMissingException<StatementNode>(null);
+            return TryParseStatement(parent, enumerator) ?? throw new ExpectedNodeMissingException<StatementNode>(null);
         }
 
-        private StatementNode? TryParseLineStatement(Node parent, IEnumerator<IToken> enumerator)
+        private StatementNode? TryParseStatement(Node parent, IEnumerator<IToken> enumerator)
         {
             IToken? token = enumerator.Current;
 
@@ -55,7 +55,7 @@ namespace SyntaxAnalyzer.Parsers
                 return null;
             }
 
-            if (enumerator.Current is {Type: TokenType.BraceCurlyOpen})
+            if (token is {Type: TokenType.BraceCurlyOpen})
             {
                 var blockStatement = new BlockStatementNode {Parent = parent};
 
@@ -102,6 +102,21 @@ namespace SyntaxAnalyzer.Parsers
                 return ifElseStatement;
             }
 
+            if (token is {Type: TokenType.KeywordWhile})
+            {
+                WhileStatement whileStatement = new() {Parent = parent};
+
+                enumerator.GetNextToken();
+                
+                enumerator.AssertToken(TokenType.ParenthesesOpen);
+                whileStatement.WhileCondition = ParseExpression(whileStatement, enumerator);
+                enumerator.AssertToken(TokenType.ParenthesesClose);
+
+                whileStatement.WhileBody = ParseStatement(whileStatement, enumerator);
+
+                return whileStatement;
+            }
+
             return null;
         }
 
@@ -138,8 +153,6 @@ namespace SyntaxAnalyzer.Parsers
         private ExpressionNode ParseExpression(Node parent, IEnumerator<IToken> enumerator)
         {
             return ParseLogicalExpression(parent, enumerator);
-
-            throw new NotImplementedException();
         }
 
         private ExpressionNode ParseGenericBinaryExpression<TNew>(Node parent, IEnumerator<IToken> enumerator,

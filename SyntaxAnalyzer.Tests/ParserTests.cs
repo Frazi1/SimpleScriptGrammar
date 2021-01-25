@@ -59,8 +59,9 @@ else
 c = (a < b | true) != true
 ",null);
 
-            yield return (@"{ {} {} {} }", null);
-            yield return (@"{ { { { } } } }", null);
+            yield return ("{ {} {} {} }", new[] {"{", "{", "}", "{", "}", "{", "}", "}"});
+            yield return ("{ { { { } } } }", new[] {"{", "{", "{", "{", "}", "}", "}", "}"});
+            yield return (@"while() {}", new[] {"while", "{", "}"});
         }
         
 
