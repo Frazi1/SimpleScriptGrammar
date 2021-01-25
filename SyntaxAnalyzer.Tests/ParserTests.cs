@@ -20,7 +20,7 @@ namespace SyntaxAnalyzer.Tests
 
         private static IEnumerable<(string input, string[]? assertTokens)> GetInputs()
         {
-            yield return ("aXcs321sadas = 0", new[] {"aXcs321dsadas", "=", "0"});
+            yield return ("aXcs321sadas = 0", new[] {"aXcs321sadas", "=", "0"});
             yield return ("a = 15", new[] {"a", "=", "15"});
             yield return ("a = 1 + 2", new[] {"a", "=", "1", "+", "2"});
             yield return ("a = 1 - 2", new[] {"a", "=", "1", "-", "2"});
